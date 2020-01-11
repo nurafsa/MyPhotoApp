@@ -1,51 +1,74 @@
 import { Injectable } from '@angular/core';
 import { Album } from './Album';
-import { HttpClient } from '@angular/common/http';
+
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlbumService {
+
+  apiBaseUrl = "http://ec2-54-218-206-93.us-west-2.compute.amazonaws.com:7000/api";
   
+  idToken = localStorage.getItem('idToken');
+
   constructor(private http: HttpClient) { }
 
-  private albums: Album [] = [{
-    id: "1",
-    title: "Album 1",
-    coverPhotoUrl: "https://cdn2.outdoorphotographer.com/2017/03/P_150127-_JBA2734-815x1024.jpg", 
-    creationDate: "",
-    createdBy:"",
-  },
-  {
-    id: "2",
-    title: "Album 2",
-    coverPhotoUrl: "https://cdn2.outdoorphotographer.com/2017/03/P_150127-_JBA2734-815x1024.jpg", 
-    creationDate: "",
-    createdBy:"", 
-  },
-  {
-    id: "3",
-    title: "Album 3",
-    coverPhotoUrl: "https://cdn2.outdoorphotographer.com/2017/03/P_150127-_JBA2734-815x1024.jpg", 
-    creationDate: "",
-    createdBy:"",
-  },
-];
+  public getMyAlbums(){
+     console.log("Id token inside Album service", this.idToken);
+     var headers = this.getHeaders();
+     return this.http.get(this.apiBaseUrl + "/albums", {headers});
+   }
 
   public getAllAlbums(){
+    console.log("Id token inside Album service", this.idToken);
+    var headers = this.getHeaders();
+    return this.http.get(this.apiBaseUrl + "/albums/all", {headers});
+  }
 
-    var idToken= localStorage.getItem('idToken');
-    console.log("Id token inside Album service", idToken);
-
-    const headers = {
-      'idToken': idToken
+  public getHeaders(){
+    var headers = {
+      'idToken': this.idToken
     };
-
-   
-    return this.http.get("http://ec2-54-218-206-93.us-west-2.compute.amazonaws.com:7000/api/albums",{headers});
+    return headers;
   }
 
   public getAlbumDetails(id){
-     return this.albums[id-1];
+
+    var headers = this.getHeaders();
+    return this.http.get(this.apiBaseUrl + "/albums/"+id+"/photos", {headers});     
+  }
+
+  public createAlbum(fileId, albumTitle){
+    var fileUrl = this.apiBaseUrl + "/files/show/"+fileId;
+
+    console.log("Inside album service");
+    console.log("Album title: ", albumTitle);
+    console.log("File Id: ", fileId);
+    console.log("File Url: ", fileUrl);
+    
+    var album: Album ={
+      id: "",
+      title: albumTitle,
+      coverPhotoUrl: fileUrl,
+      creationDate: "",
+      createdBy: "",
+    };
+
+    var headers = this.getHeaders();
+
+    console.log("Header: ", headers);
+    return this.http.post(this.apiBaseUrl + "/albums", album, {headers});
+  }
+
+  public updateCoverPhoto(albumId, coverPhotoUrl){
+    
+    var headers = this.getHeaders();
+    
+    const params = new HttpParams()
+    .set('id', albumId)
+    .set('photoUrl', coverPhotoUrl);
+
+    return this.http.put(this.apiBaseUrl + "/albums/coverPhoto", params, {headers});
   }
 }

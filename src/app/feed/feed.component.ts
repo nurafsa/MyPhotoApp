@@ -3,27 +3,25 @@ import { Album } from '../Album';
 import { AlbumService } from '../album.service';
 
 @Component({
-  selector: 'app-albums',
-  templateUrl: './albums.component.html',
-  styleUrls: ['./albums.component.css']
+  selector: 'app-feed',
+  templateUrl: './feed.component.html',
+  styleUrls: ['./feed.component.css']
 })
-export class AlbumsComponent implements OnInit {
-  
-  albums: Album[] = [];
+export class FeedComponent implements OnInit {
+
+   albums: Album[] = [];
 
   constructor( 
     private albumService: AlbumService,
   ) { }
 
   ngOnInit() {
-    
-   
-    this.albumService.getMyAlbums()
+       
+    this.albumService.getAllAlbums()
     .subscribe(
-      result => this.albums = <Album[]>result,
+      result => this.albums = (<Album[]>result).slice(-10, -1),
       err => console.error('Got an error: ' + err),
       () => console.log('Got a complete notification')
     );
   }
-
 }

@@ -1,1 +1,41 @@
-<p>Album: {{albumId}} </p>
+<!-- <div *ngIf="user.albumId">  -->
+    <div class="card">
+        <div class="card-body">
+            <a [routerLink]= "['/upload-photo', albumId, albumTitle]" >
+                <button  type = "button" class="btn btn-outline-primary float-right">Upload Photo</button>
+            </a>
+        </div>
+    </div>
+<!-- </div>  -->
+
+<h1>{{photos.length}} photos in {{albumTitle}} </h1>
+
+<div class="row">
+  <div class="row" *ngFor="let photo of photos">
+        <div class="col-sm-6">
+            <div class="card border-secondary mb-3" style="width: 18rem;">
+                <div class="card-body border-secondary">
+                    <h5 class="card-title">{{photo.createdBy}}</h5>
+                    <p class="card-text">
+                        <a [routerLink]= "['/photo', photo.id, photo.photoUrl]">
+                            <div *ngIf="!photo.photoUrl">
+                                <img src="{{defaultImageUrl}}" class="card-img-top">
+                            </div>
+                            <div *ngIf="photo.photoUrl">
+                                <img src="{{photo.photoUrl}}" class="card-img-top">
+                            </div>
+                        </a>
+                    </p>
+                 
+                 <input type=button #button (click)="makeCoverPhoto(button.name)" name="{{photo.photoUrl}}" class="btn btn-primary" value="Make cover photo" >
+                 
+                 <br/>
+                 <br/>
+
+                 <input type=button #profilePhoto (click)="makeProfilePhoto(button.name)" name="{{photo.photoUrl}}" class="btn btn-primary" value="Make profile photo" >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
